@@ -1,0 +1,32 @@
+1. Assumption is there is going to one board defined or being utilized in Pull panning for each Project, correct?
+Projects do not necessarily have pull planning. Projects can be seen as containers for organizing boards. Projects can contain other projects. A board should also be able to be seen/used in multiple projects. Boards can also be independant of projects. 
+
+See Diagram example "Board and Project Containment". All of the relationships should be possible:
+When Considering how a board's data should be viewable in a report or list view, there should be options on Filtering by Board, By Project (which would then include all boards and project contained in it), and grouping by Board or project. 
+
+-------------
+2. Only Admin creates or add a board, correct?
+
+Standard users can create Boards. A board can be created from a system Template. Users can create personnal templates which no one else can see using a system templates or other personnal templates. Administrative users can create and modify Board Templates. See use case diagram 
+"Creating Board Templates"
+
+-------------
+3. What is meant by “Full user”? refer to “Add Full User” by Admin.
+
+Updated Master uses cases diagram. "Full User" is now any user. The basic division of labor is that Standard users should be able to do anything in the system except adding new Standard users, and managing global Templates. They should be able to create create boards, edit boards, create notes, note data, task data etc. They should also be able to invite Contributing users. 
+-------------
+
+4. Pull panning has Milestones and also modules, how are they represented?
+
+-------------
+5. What is a resource? (refer to”Add Resource” Use case)
+
+Resources are data which can be part of a Task. (A task may have resources, but also may not). Resources are defined as cost, hours, 
+
+
+-------------
+6. How are the lean tools such as Kanban, PDCA, Fishbone etc, are utilized or added to which use cases? Or are they going to be defined as Board types?
+
+There are no board Types if thinking of types as distinct boards with set attributes. There should be board templates, which 
+
+-------------

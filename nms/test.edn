@@ -1,0 +1,150 @@
+
+
+{"tests" 
+    {   :appt-scheduler
+        {
+        :addpatient with not all days
+        }
+        
+        
+        :master-calendar-view 
+        {:drag-and-drop true,
+        :edit-series 
+            {:monday->friday true
+            :tusday->weekend
+            :delete-series 
+            :am->pm [false "duplicates visit-series, no update to "] 
+            
+             }}}
+
+test = [
+    {k1: {id: 6, p: 1, n: 66, d: 55, t: 77}, k2: {id: 6, p: 1, n: 66, d: 556, t: 77}, k3: {id: 6, p: 1, n: 88, d: 55, t: 77}}
+    {k1: {p: 1, n: 66, d: 55, t: 9}, k2: {p: 1, n: 88, d: 55, t: 9}}
+    n,d
+    t
+    ->>
+    {k1: {id: 6, p: 1, n: 66, d: 55, t: 77}, k2: {id: 6, p: 1, n: 66, d: 556, t: 77}, k3: {id: 6, p: 1, n: 88, d: 55, t: 77}}
+    {k1: {p: 1, n: 66, d: 55, t: 9}, k2: {p: 1, n: 0, d: 55, t: 9}}
+    n,d
+    t
+]
+
+{k1: {p: 1, n: 66, d: 4, t: 2}, 
+k2: {p: 1, n: 66, d: 1, t: 2}, 
+k3: {p: 1, n: 66, d: 5, t: 2},
+k4: {p: 1, n: 5, d: 5, t: 1},
+k5: {p: 1, n: 66, d: 4, t: 1},
+k6: {p: 1, n: 66, d: 2, t: 1}}
+
+
+
+{
+    time
+    am,                 pm, 
+    565343000000812019, 565343000000812023
+}
+{   
+    day
+    1, s,               2, m,               3, t,               4, w,               5, t,               6, f,               7, s
+    565343000000945003, 565343000000847059, 565343000000847063, 565343000000847067, 565343000000847071, 565343000000847075, 565343000000812015
+}
+{   
+    nurse
+    kb, n2
+    565343000000812007
+}
+
+
+case1 = {
+    //null nurse to new nurse
+    //
+    pid 
+    565343000000871219
+    resolved
+    {"1":{"p":565343000000871219,"id":565343000000871363,"d":565343000000847063,"t":565343000000812023,"n":null},
+     "2":{"p":565343000000871219,"id":565343000000871363,"d":565343000000847075,"t":565343000000812023,"n":null}}
+    changes
+    {xxx: {p:565343000000871219, n: 565343000000812007, d: 565343000000847063, t: 565343000000812023}}   //{n:1, d:3, t:pm}  
+    //
+    //passed
+}
+
+case2 = {
+    //
+    "add new day/time series [Monday, AM]"
+    pid:  565343000000841079
+    changes: 
+    {xxx: {p:565343000000841079, n: 565343000000812007, d: 565343000000847059, t: 565343000000812023}} 
+    comp:   [n]
+    update: [t,d]
+    swap:   true
+    //
+    result:
+    {"1ampm":{"p":565343000000841079,"d":[565343000000847075, 565343000000847063, 565343000000847067],"t":[565343000000812019, 565343000000812023],"n":565343000000812007},
+     "1pm":{"p":565343000000841079,"d":[565343000000847059],"t":[565343000000812023],"n":565343000000812007}}
+     //
+     //passed
+}
+
+case3 = {
+    //
+    "remove series day/time [Teusday, AM]"
+    //
+    pid:  565343000000841079
+    changes: 
+    {xxx: {n: 565343000000812007, d: 565343000000847075, t: 565343000000812023}}
+    {xxx: {p:565343000000841079, n: 565343000000812007, d: 565343000000847075, t: 565343000000812023}} 
+    comp:   [n,t,d]
+    update: []
+    swap:   false
+    //
+    result:
+   {"1am":{"p":565343000000841079,"d":[565343000000847075],"t":[565343000000812019],"n":565343000000812007},
+   "1ampm":{"p":565343000000841079,"d":[565343000000847063, 565343000000847067],"t":[565343000000812019, 565343000000812023],"n":565343000000812007}}
+     //
+     expected:
+     {"1ampm":{"p":565343000000841079,"d":[565343000000847063, 565343000000847067],"t":[565343000000812019, 565343000000812023],"n":565343000000812007}
+      "2ampm":{"p":565343000000841079,"d":[565343000000847075],"t":[565343000000812019],"n":565343000000812007}}
+     //passed
+}
+
+
+
+{xxx: {p: 565343000000841079, n: 565343000000812007, d: 565343000000847059, t: 565343000000812019}}
+
+
+Day Time    inloop       post
+T   T   ->  donothing   donothing
+F   F   ->  donothing   makenew entry in acc
+T   F   ->  
+F   T   ->  
+
+
+;snippets
+;Support_Tickets.sort(input.Support_Tickets=="Pending Tickets");
+if(thisapp.Visit.isEditable == false)
+	{
+    	delete from zVisit[ (zfPatient == input.zfPatient && ID != input.apptinput) ];
+	}
+
+
+
+hide model_Series;
+hide model_CalendarTitle;
+hide model_VisitDate;
+hide model_day;
+hide model_time;
+hide model_Nurse;
+//
+hide view_Nurse;
+hide view_series_NewTime;
+hide view_series_NewDay;
+hide view_series_NewTimes;
+hide view_series_NewDays;
+//
+hide view_treat_start;
+hide view_treat_end;
+//
+input.mv_nurse = Add_Nurse[ID == input.model_Nurse].Full_Name;
+input.mv_time = zTime[ID == input.model_time].zxTime;
+input.mv_day = zDay[ID == input.model_day].zxDay;

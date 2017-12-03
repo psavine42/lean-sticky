@@ -1,0 +1,417 @@
+form  zVisit
+{
+    displayname  =  "Visit"
+    success message  =  "Data Added Successfully!"
+    field alignment = left
+    
+    must  have  zfPatient
+    (
+        displayname  =  "Patient"
+        type  =  picklist
+        values  =  Demographic.ID
+        displayformat = [ Full_Name ]
+        sortorder  =  ascending
+        searchable  =  true
+        width  =  206px
+        on user input
+        {
+            demo  =  Demographic  [ID == input.zfPatient];
+            input.zTeam = demo.zTeam;
+            input.Treatment_Start = demo.Treatment_Start;
+            input.Treatment_End = demo.Treatment_End;
+            input.zfNurse = demo.Add_Nurse;
+            input.znDay = demo.zDay;
+            input.znTime = demo.zTime;
+        }
+    )
+
+    zfNurse
+    (
+        displayname  =  "Nurse"
+        type  =  picklist
+        values  =  Add_Nurse[zTeam == input.zTeam].ID
+        displayformat = [ Full_Name ]
+        sortorder  =  ascending
+        searchable  =  true
+        width  =  206px
+    )
+
+    zTeam
+    (
+        displayname  =  "Team"
+        type  =  picklist
+        values  =  zTeam.ID
+        displayformat = [ zTeam ]
+        sortorder  =  ascending
+        searchable  =  true
+        width  =  206px
+    )
+
+    plain
+    (
+        type  =  plaintext
+        value = "<font size=\"1\">Schedule</font><br><hr>\n"
+    )
+
+    zfVisitDate
+    (
+        displayname  =  "VisitDate"
+        type  =  datetime
+        width  =  200px
+        alloweddays = 0,1,2,3,4,5,6
+    )
+
+    zfDay
+    (
+        displayname  =  "Current Visit Day"
+        type  =  picklist
+        values  =  zDay.ID
+        displayformat = [ zxDay ]
+        sortorder  =  ascending
+        searchable  =  true
+        width  =  206px
+    )
+
+    znDay
+    (
+        displayname  =  "Visit Days"
+        type  =  list
+        values  =  zDay.ID
+        displayformat = [ zxDay ]
+        sortorder = ascending
+        searchable  =  true
+        height  =  60px
+        width  =  205px
+    )
+
+    zfTime
+    (
+        displayname  =  "Current Visit Time"
+        type  =  picklist
+        values  =  zTime.ID
+        displayformat = [ zxTime ]
+        sortorder  =  ascending
+        searchable  =  true
+        width  =  206px
+    )
+
+    zTime
+    (
+        displayname  =  "Time"
+        type  =  list
+        values  =  zTime.ID
+        displayformat = [ zxTime ]
+        sortorder = ascending
+        searchable  =  true
+        height  =  60px
+        width  =  206px
+    )
+
+    Edit
+    (
+        displayname  =  "Edit Series"
+        type  =  radiobuttons
+        values  =  {"Single Visit",   "Whole Schedule",   "Daily Schedule"}
+        on user input
+        {
+            if (input.Edit  ==  "Single Visit")
+            {
+                hide zSeries;
+                hide znDay;
+                hide znTime;
+                hide zfDay;
+                hide NewVisitDay;
+                hide Treatment_Start;
+                hide Treatment_End;
+                //hide Current_Visit_Day;
+                hide zTime;
+                ///
+                show zfVisitDate;
+                show zfTime;
+            }
+            else if (input.Edit  ==  "Daily Schedule")
+            {
+                hide Treatment_Start;
+                hide Treatment_End;
+                //hide Current_Visit_Day;
+                hide zfTime;
+                hide znDay;
+                ///	
+                show NewVisitDay;
+                hide znTime;
+                show zfDay;
+                hide zTime;
+                ///
+                //demo  =  Demographic  [ID == input.zfPatient];
+                curseris  =  zSeries  [ID == input.zSeries];
+                zTime.select(curseris.zTime);
+                znTime.select(curseris.zTime);
+            }
+            else if (input.Edit  ==  "Whole Schedule")
+            {
+                hide zfTime;
+                hide zfDay;
+                hide zTime;
+                hide NewVisitDay;
+                //hide Current_Visit_Day;
+                ///
+                show znDay;
+                show znTime;
+                show Treatment_Start;
+                show Treatment_End;
+                ///
+                zTime.deselectall();
+                demo  =  Demographic  [ID == input.zfPatient];
+                input.Treatment_Start = demo.Treatment_Start;
+                input.Treatment_End = demo.Treatment_End;
+                input.znDay = demo.zDay;
+                input.znTime = demo.zTime;
+            }
+        }
+    )
+
+    NewVisitDay
+    (
+        displayname  =  "New Visit Day"
+        type  =  picklist
+        values  =  {"Delete Visit Day",   "Monday",   "Tuesday",   "Wednesday",   "Thursday",   "Friday",   "Saturday",   "Sunday"}
+        width  =  206px
+    )
+
+    znTime
+    (
+        displayname  =  "New Visit Time"
+        type  =  list
+        values  =  zTime.ID
+        displayformat = [ zxTime ]
+        sortorder = ascending
+        searchable  =  true
+        height  =  60px
+        width  =  206px
+    )
+
+    Treatment_Start
+    (
+        displayname  =  "Treatment Start"
+        type  =  datetime
+        width  =  200px
+        alloweddays = 0,1,2,3,4,5,6
+    )
+
+    Treatment_End
+    (
+        displayname  =  "Treatment End"
+        type  =  datetime
+        width  =  200px
+        alloweddays = 0,1,2,3,4,5,6
+    )
+
+    zSeries
+    (
+        displayname  =  "Series"
+        type  =  picklist
+        values  =  zSeries.ID
+        displayformat = [ ID ]
+        sortorder  =  ascending
+        searchable  =  true
+        width  =  206px
+    )
+
+    CalendarTitle
+    (
+        type  =  text
+        width  =  200px
+    )
+
+    actions
+    {
+        on add
+        {
+            on load
+            {
+                //hide Appointment_Date;
+                //hide Edit_Series;
+                hide zSeries;
+                hide znDay;
+                hide znTime;
+                hide CalendarTitle;
+                hide NewVisitDay;
+                hide zfVisitDate;
+                hide zfDay;
+                hide zfTime;
+                hide Treatment_Start;
+                hide Treatment_End;
+                //hide Current_Visit_Day;
+                hide zTime;
+                //hide Nurses_To_Patients;
+            }
+            submit
+            (
+                type  =  submit
+                displayname  =  "Submit"
+                PreSubmit = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><preoncommit><successmsg><type><![CDATA[sucmsgtimeout]]></type><value><![CDATA[Data Added Successfully!]]></value><timeout><![CDATA[2]]></timeout></successmsg><openurl/></preoncommit>"
+                on validate
+                {
+                    //lookup variables
+                    PrevVisit  =  zVisit  [ID == input.ID];
+                    //CurSeries  =  zSeries  [zfPatient == input.zSeries] range from 0 to 1;
+                    CurSeries  =  zSeries  [ID == input.zSeries];
+                    // range from 0 to 1;
+                    CurDemo  =  Demographic  [ID == input.zfPatient];
+                    CurNurse  =  Add_Nurse  [ID == input.zfNurse];
+                    if (input.Edit  ==  "Single Appointment")
+                    {
+                        //Nothing - this will update only a single appontment
+                        //detacj from series
+                        input.zSeries = null;
+                    }
+                    else if (input.Edit  ==  "Daily Schedule")
+                    {
+                        PrevVisits  =  zVisit  [((zfPatient == input.zfPatient && zfDay == input.zfDay) && zfTime == input.zfTime)];
+                        if (input.NewVisitDay  ==  "Delete Visit Day")
+                        {
+                            PrevVisits1  =  zVisit  [(zfPatient == input.zfPatient && zfDay == input.zfDay)];
+                            // && zfTime == input.zfTime)];
+                            for each record in PrevVisits1
+                            {
+                                if (record.ID  !=  input.ID)
+                                {
+                                    delete from zVisit[ ID == record.ID ];
+                                }
+                            }
+                            // dayind = CurSeries.zDay.indexOf(VisitDay.ID);
+                            thisapp.Updaters.upd_Series_day(CurSeries, input.zfDay);
+                        }
+                        else
+                        {
+                            //Lookup the record for the from the input day string
+                            nvd = zDay[zxDay == input.NewVisitDay].ID;
+                            // info input.zfDay;
+ 
+                            //Remove Current Visits - this function will rebuild all visits
+                            delete from zVisit[ (zfPatient == input.zfPatient && ID != input.ID) ];
+                            //thisapp.Com.SeriesNotChanged(input.zfPatient, input.zfNurse, nvd, input.znTime, CurDemo.Treatment_Start, CurDemo.Treatment_End);
+                            thisapp.Com.SeriesChanged(input.zfPatient, input.zfNurse, input.zfDay, CurSeries.ID, nvd, input.znTime, CurDemo.Treatment_Start, CurDemo.Treatment_End);
+                            thisapp.Updaters.upd_Demographic_day(CurDemo, nvd);
+                            thisapp.Updaters.del_Demographic_day(CurDemo, input.zfDay);
+                        }
+                    }
+                    else if (input.Edit  ==  "Whole Schedule")
+                    {
+                        thisapp.Calendar.UpdateWholeSchedule(input.ID, CurDemo.ID, input.Treatment_Start, input.Treatment_End, input.znDay, input.znTime, input.zfNurse, input.zfPatient);
+                    }
+                    else
+                    {
+                    }
+                }
+            )
+            reset
+            (
+                type  =  reset
+                displayname  =  "Reset"
+            )
+        }
+        on edit
+        {
+            on load
+            {
+                hide zSeries;
+                hide znDay;
+                hide znTime;
+                hide CalendarTitle;
+                hide NewVisitDay;
+                hide zfVisitDate;
+                hide zfDay;
+                hide zfTime;
+                hide Treatment_Start;
+                hide Treatment_End;
+                //hide Current_Visit_Day;
+                hide zTime;
+            }
+            update
+            (
+                type  =  submit
+                displayname  =  "Update"
+                on validate
+                {
+                    //lookup variables
+                    PrevVisit  =  zVisit  [ID == input.ID];
+                    //CurSeries  =  zSeries  [zfPatient == input.zSeries] range from 0 to 1;
+                    CurSeries  =  zSeries  [ID == input.zSeries];
+                    // range from 0 to 1;
+                    CurDemo  =  Demographic  [ID == input.zfPatient];
+                    CurNurse  =  Add_Nurse  [ID == input.zfNurse];
+                    info input.Edit;
+                    if (input.Edit  ==  "Single Appointment")
+                    {
+                        //Nothing - this will update only a single appontment
+                        input.zSeries = null;
+                    }
+                    else if (input.Edit  ==  "Daily Schedule")
+                    {
+                        PrevVisits  =  zVisit  [((zfPatient == input.zfPatient && zfDay == input.zfDay) && zfTime == input.zfTime)];
+                        if (input.NewVisitDay  ==  "Delete Visit Day")
+                        {
+                            PrevVisits1  =  zVisit  [(zfPatient == input.zfPatient && zfDay == input.zfDay)];
+                            // && zfTime == input.zfTime)];
+                            for each record in PrevVisits1
+                            {
+                                if (record.ID  !=  input.ID)
+                                {
+                                    delete from zVisit[ ID == record.ID ];
+                                }
+                            }
+                            // dayind = CurSeries.zDay.indexOf(VisitDay.ID);
+                            thisapp.Updaters.upd_Series_day(CurSeries, input.zfDay);
+                        }
+                        else
+                        {
+                            //Lookup the record for the from the input day string
+                            nvd = zDay[zxDay == input.NewVisitDay].ID;
+                            //Remove Current Visits - this function will rebuild all visits
+                            delete from zVisit[ (zfPatient == input.zfPatient && ID != input.ID) ];
+                            //thisapp.Com.SeriesNotChanged(input.zfPatient, input.zfNurse, nvd, input.znTime, CurDemo.Treatment_Start, CurDemo.Treatment_End);
+                            thisapp.Com.SeriesChanged(input.zfPatient, input.zfNurse, input.zfDay, CurSeries.ID, nvd, input.znTime, CurDemo.Treatment_Start, CurDemo.Treatment_End);
+                            thisapp.Updaters.upd_Demographic_day(CurDemo, nvd);
+                            thisapp.Updaters.del_Demographic_day(CurDemo, input.zfDay);
+                        }
+                    }
+                    else if (input.Edit  ==  "Whole Schedule")
+                    {
+                        thisapp.Calendar.UpdateWholeSchedule(input.ID, CurDemo.ID, input.Treatment_Start, input.Treatment_End, input.znDay, input.znTime, input.zfNurse, input.zfPatient);
+                    }
+                    else if (input.Edit  ==  null)
+                    {
+                        //case if the user is dragging and dropping
+                        nvd = zDay[zxDay == input.NewVisitDay].ID;
+                        input.zSeries = null;
+                    }
+                }
+                on success
+                {
+                    thisvisit  =  zVisit  [ID == input.ID];
+                    //delete from zSeries[ ID == thisvisit.zSeries ];
+                    //delete from zVisit[ ID == input.ID ];
+                    /*if(input.Edit == "Daily Schedule")
+{
+	newserii  =  zSeries  [zfPatient == input.zfPatient];
+    for each updser in newserii
+    {
+        for each day in updser.zDay
+        {
+            info " series day to create : " + updser.ID;
+            thisapp.PUT.Build_Series(input.zfPatient, updser.zfNurse, day, input.Treatment_Start, input.Treatment_End, updser.zTime, updser.ID);
+        }
+    }
+	
+}*/
+                }
+            )
+            cancel
+            (
+                type  =  cancel
+                displayname  =  "Cancel"
+            )
+        }
+    }
+    }
